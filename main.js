@@ -15,6 +15,10 @@ var fireButton;
 var enemies;
 
 
+var score = 0;
+var scoreText;
+var winText;
+
 
 
 var mainState = {
@@ -58,6 +62,11 @@ var mainState = {
 			enemies.scale.setTo(1.7)
 
 			createEnemies();
+
+			scoreText = game.add.text(0,550,'Score:', {font: '32px Arial', fill : '#fff'});
+			winText = game.add.text(game.world.centerX,game.world.centerY, 'You Win!', {font: '32px Arial', fill : '#fff'});
+			winText.visible = false;
+
 	},
 
 
@@ -80,6 +89,13 @@ var mainState = {
 		if(fireButton.isDown) 
 		{
 			fireBullet();
+		}
+
+		scoreText.text = 'Score:' + score;
+
+		if(score == 2000) {
+			winText.visible = true;
+			scoreText.visible = false;
 		}
 
 	},
@@ -124,6 +140,10 @@ function descend() {
 function collisionHandler(bullet,enemy){
 	bullet.kill();
 	enemy.kill();
+
+	score += 100;
+
+
 }
 
 
