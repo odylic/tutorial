@@ -12,6 +12,9 @@ var bullets;
 var bulletTime = 0;
 var fireButton;
 
+var enemies;
+
+
 
 
 var mainState = {
@@ -21,6 +24,7 @@ var mainState = {
 		game.load.image('player', "assets/Chrono.gif");
 
 		game.load.image('bullet', "assets/bullet.png");
+		game.load.image('enemy', "assets/enemy.png");
 
 	},
 
@@ -31,7 +35,9 @@ var mainState = {
 
 			player = game.add.sprite(game.world.centerX, game.world.centerY +200, 'player');
 			game.physics.enable(player, Phaser.Physics.ARCADE);
-			
+			player.scale.setTo(1.3);
+
+
 			cursors = game.input.keyboard.createCursorKeys();
 
 			bullets = game.add.group();
@@ -46,10 +52,19 @@ var mainState = {
 
 			fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
+			enemies = game.add.group();
+			enemies.enableBody = true;
+			enemies.physicsBodyType = Phaser.Physics.ARCADE;
+			enemies.scale.setTo(1.7)
+
+			createEnemies();
 	},
 
 
 	update: function() {
+
+		game.physics.arcade.overlap(bullets, enemies, collisionHandler, null, this);
+
 
 		player.body.velocity.x = 0;
 
@@ -67,11 +82,7 @@ var mainState = {
 			fireBullet();
 		}
 
-
-
 	},
-
-
 
 }
 
@@ -87,6 +98,34 @@ function fireBullet(){
 		}
 	}
 }
+
+function createEnemies(){
+	for (var y = 0; y<4; y++) {
+		for ( var x = 0; x < 5; x++) {
+			var enemy = enemies.create(x*70, y*50, 'enemy');
+			enemy.anchor.setTo(0.5, 0.5);
+		}
+	}
+
+
+	enemies.x = 130; 
+	enemies.y = 50;
+
+	var tween = game.add.tween(enemies).to({x:250},2000, Phaser.Easing.Linear.None, true, 0, 1000,true);
+	
+	tween.onLoop.add(descend,this);
+
+}
+
+function descend() {
+	enemies.y += 10;
+}
+
+function collisionHandler(bullet,enemy){
+	bullet.kill();
+	enemy.kill();
+}
+
 
 game.state.add('mainState', mainState);
 game.state.start('mainState');
